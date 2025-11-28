@@ -1,23 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth-context';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { login, isLoading } = useAuth();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    async function handleLogin(e: React.FormEvent) {
         e.preventDefault();
-        setIsLoading(true);
+        setError(null);
 
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-            // Handle login logic here
-            console.log('Login attempt:', { email, password });
-        }, 1500);
-    };
+        try {
+            await login(email, password);
+            navigate("/dashboard");
+        } catch (err) {
+            console.error('Login error:', err);
+            setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+        }
+    }
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
@@ -42,8 +45,20 @@ export default function Login() {
                         <p className="text-gray-300">Sign in to continue to your account</p>
                     </div>
 
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl">
+                            <div className="flex items-center">
+                                <svg className="h-5 w-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p className="text-sm text-red-300">{error}</p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Login Form */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleLogin} className="space-y-6">
                         {/* Email Input */}
                         <div className="space-y-2">
                             <label htmlFor="email" className="block text-sm font-medium text-gray-200">

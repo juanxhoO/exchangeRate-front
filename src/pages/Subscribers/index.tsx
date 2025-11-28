@@ -1,5 +1,6 @@
 import Table, { type Column, type TableAction } from '../../components/UI/Table';
-
+import { useEffect } from 'react';
+import { searchUsers } from '../../services/users';
 interface Subscriber {
     id: number;
     name: string;
@@ -11,7 +12,17 @@ interface Subscriber {
 
 export default function Subscribers() {
     // Sample data - replace with your actual data fetching
+    useEffect(() => {
+        const fetchSubscribers = async () => {
+            const subscribers = await searchUsers({ role: 'subscriber' });
+            console.log(subscribers);
+            return subscribers;
+        };
+        fetchSubscribers();
+    }, []);
+
     const subscribers: Subscriber[] = [
+
         {
             id: 1,
             name: 'ExchangeRate-API',
