@@ -20,7 +20,6 @@ export async function apiFetch(input: string, options: RequestInit = {}) {
         headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
-    console.log(API_BASE_URL + input);
     let response = await fetch(API_BASE_URL + input, {
         ...options,
         headers,
@@ -50,7 +49,7 @@ export async function apiFetch(input: string, options: RequestInit = {}) {
         throw new Error(err.message || "Request failed");
     }
 
-    return response.json();
+    return response;
 }
 
 async function tryRefreshToken() {

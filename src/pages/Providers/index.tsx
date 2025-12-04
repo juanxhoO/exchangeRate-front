@@ -1,42 +1,30 @@
 import Table, { type Column, type TableAction } from '../../components/UI/Table';
-
+import { fetchProviders } from '../../services/providers';
+import { useEffect, useState } from 'react';
 interface Provider {
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
     apiKey: string;
-    status: 'active' | 'inactive';
+    status: boolean;
     lastSync: string;
     requestCount: number;
 }
 
+
 export default function Providers() {
+
+    const [providers, setProviders] = useState<Provider[]>([]);
+
+    useEffect(() => {
+        const getProviders = async () => {
+            const providers = await fetchProviders();
+            console.log(providers)
+            setProviders(providers);
+        };
+        getProviders();
+    }, []);
     // Sample data - replace with your actual data fetching
-    const providers: Provider[] = [
-        {
-            id: 1,
-            name: 'ExchangeRate-API',
-            apiKey: 'sk_live_***************',
-            status: 'active',
-            lastSync: '2025-11-26 14:30:00',
-            requestCount: 1234,
-        },
-        {
-            id: 2,
-            name: 'CurrencyLayer',
-            apiKey: 'sk_live_***************',
-            status: 'active',
-            lastSync: '2025-11-26 14:25:00',
-            requestCount: 856,
-        },
-        {
-            id: 3,
-            name: 'Fixer.io',
-            apiKey: 'sk_live_***************',
-            status: 'inactive',
-            lastSync: '2025-11-25 10:15:00',
-            requestCount: 423,
-        },
-    ];
 
     // Define columns
     const columns: Column<Provider>[] = [
@@ -47,10 +35,10 @@ export default function Providers() {
             render: (provider) => (
                 <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm">
-                        {provider.name.substring(0, 2).toUpperCase()}
+                        {provider?.firstName.substring(0, 2).toUpperCase()}
                     </div>
                     <div>
-                        <p className="font-medium text-white">{provider.name}</p>
+                        <p className="font-medium text-white">{provider.firstName} + {provider.lastName}</p>
                         <p className="text-xs text-gray-400">ID: {provider.id}</p>
                     </div>
                 </div>
@@ -61,7 +49,7 @@ export default function Providers() {
             header: 'API Key',
             render: (provider) => (
                 <code className="px-2 py-1 bg-white/5 rounded text-xs text-gray-300 font-mono">
-                    {provider.apiKey}
+                    {provider?.apiKey}
                 </code>
             ),
         },
@@ -71,36 +59,25 @@ export default function Providers() {
             sortable: true,
             render: (provider) => (
                 <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${provider.status === 'active'
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${provider.status === true
                         ? 'bg-green-500/20 text-green-400'
                         : 'bg-red-500/20 text-red-400'
                         }`}
                 >
-                    {provider.status.charAt(0).toUpperCase() + provider.status.slice(1)}
+                    {provider.status ? "Active" : "Inactive"}
                 </span>
             ),
         },
-        {
-            key: 'lastSync',
-            header: 'Last Sync',
-            sortable: true,
-            render: (provider) => (
-                <div>
-                    <p className="text-white">{provider.lastSync.split(' ')[0]}</p>
-                    <p className="text-xs text-gray-400">{provider.lastSync.split(' ')[1]}</p>
-                </div>
-            ),
-        },
-        {
-            key: 'requestCount',
-            header: 'Requests',
-            sortable: true,
-            render: (provider) => (
-                <span className="font-semibold text-purple-400">
-                    {provider.requestCount.toLocaleString()}
-                </span>
-            ),
-        },
+        // {
+        //     key: 'requestCount',
+        //     header: 'Requests',
+        //     sortable: true,
+        //     render: (provider) => (
+        //         <span className="font-semibold text-purple-400">
+        //             {provider.requestCount.toLocaleString()}
+        //         </span>
+        //     ),
+        // },
     ];
 
     // Define actions
@@ -177,10 +154,10 @@ export default function Providers() {
                         </div>
                     </div>
                     <p className="text-3xl font-bold text-white">
-                        {providers.filter((p) => p.status === 'active').length}
+                        {providers.filter((p) => p.status === true).length}
                     </p>
                 </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+                {/* <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="text-gray-400 text-sm">Total Requests</h3>
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
@@ -192,7 +169,7 @@ export default function Providers() {
                     <p className="text-3xl font-bold text-white">
                         {providers.reduce((sum, p) => sum + p.requestCount, 0).toLocaleString()}
                     </p>
-                </div>
+                </div> */}
             </div>
 
             {/* Table */}

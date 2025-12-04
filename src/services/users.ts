@@ -78,9 +78,10 @@ export async function getUser(id: string, accessToken: string): Promise<any> {
     return res.json();
 }
 
-
 export async function searchUsers(filters: any): Promise<any> {
-    const res = await apiFetch(`/v1/user/search`, {
+    console.log(filters)
+    const params = new URLSearchParams(filters);
+    const res = await apiFetch(`/v1/user/search?${params}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
     });
@@ -89,6 +90,5 @@ export async function searchUsers(filters: any): Promise<any> {
         const error = await res.json().catch(() => ({ message: 'Invalid credentials' }));
         throw new Error(error.message || 'Invalid credentials');
     }
-
     return res.json();
 }
